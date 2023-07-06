@@ -1,0 +1,37 @@
+name: Build and Deploys
+
+on:
+  push:
+    branches: 
+    - master
+
+jobs:
+  build:
+    name: Build and Deployee
+    runs-on: windows-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v1
+      - name: Set up Java
+        uses: actions/setup-java@v1
+        with:
+          java-version: "12.x"
+      - name: Install Flutter
+        uses: subosito/flutter-action@v1
+        with:
+          flutter-version: "3.10.x"
+          channel: "stable"
+      - name: Install dependencies
+        run: flutter pub get
+      - name: Build APK
+        run: flutter build apk
+      - name: Upload APK
+        uses: ncipollo/release-action@v1
+        with:
+          name: listenApp.apk
+          artifacts: build/app/outputs/flutter-apk/app-release.apk
+          tag: v1.0.${{ github.run_number }}
+          token: ${{secrets.listenApp}} 
+      
+
+  
